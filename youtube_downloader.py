@@ -76,7 +76,7 @@ class YouTubeDownloader:
                     qualities = [f"{s.resolution} ({s.mime_type})" for s in streams]
                 else:
                     streams = yt.streams.get_audio_only()
-                    qualities = [f"{s.abr} ({s.mime_type})" for s in streams]
+                    qualities = f"{streams.abr} ({streams.mime_type})"
                 self.quality_combobox['values'] = qualities
                 if qualities:
                     self.quality_combobox.set(qualities[0])
