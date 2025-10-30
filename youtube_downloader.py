@@ -71,8 +71,9 @@ class YouTubeDownloader:
         if url:
             try:
                 yt = YouTube(url)
+                # print(f"All source=[{[s.mine_type for s in yt.streams.all()]}]")
                 if self.download_type.get() == "video":
-                    streams = yt.streams.filter(file_extension='mp4')
+                    streams = yt.streams.filter(adaptive='True')
                     qualities = [f"{s.resolution} ({s.mime_type})" for s in streams]
                 else:
                     streams = yt.streams.get_audio_only()
