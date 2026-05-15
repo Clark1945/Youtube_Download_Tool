@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YouTube 下載工具</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f0f2f5;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 24px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+      padding: 40px;
+      width: 100%;
+      max-width: 580px;
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 6px;
+    }
+
+    .yt-icon {
+      background: #ff0000;
+      border-radius: 10px;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .yt-icon svg { width: 22px; height: 22px; }
+
+    h1 { font-size: 1.5rem; color: #1a1a1a; }
+
+    .subtitle { color: #888; font-size: 0.875rem; margin-bottom: 32px; margin-left: 52px; }
+
+    .field { margin-bottom: 22px; }
+
+    label.field-label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #444;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .input-row { display: flex; gap: 8px; }
+
+    input[type="text"] {
+      flex: 1;
+      border: 1.5px solid #e0e0e0;
+      border-radius: 10px;
+      padding: 11px 14px;
+      font-size: 0.95rem;
+      color: #1a1a1a;
+      transition: border-color 0.15s;
+      outline: none;
+      background: #fafafa;
+    }
+
+    input[type="text"]:focus {
+      border-color: #ff0000;
+      background: white;
+    }
+
+    input[type="text"]::placeholder { color: #bbb; }
+
+    .btn {
+      border: none;
+      border-radius: 10px;
+      padding: 11px 20px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s;
+      white-space: nowrap;
+    }
+
+    .btn-primary {
+      background: #ff0000;
+      color: white;
+    }
+
+    .btn-primary:hover { background: #d40000; transform: translateY(-1px); }
+    .btn-primary:active { transform: translateY(0); }
+    .btn-primary:disabled { background: #ccc; cursor: not-allowed; transform: none; }
+
+    .btn-outline {
+      background: white;
+      color: #ff0000;
+      border: 1.5px solid #ff0000;
+    }
+
+    .btn-outline:hover { background: #fff5f5; }
+    .btn-outline:disabled { color: #ccc; border-color: #ccc; cursor: not-allowed; }
+
+    .video-info {
+      background: #f8f9fa;
+      border: 1.5px solid #e8e8e8;
+      border-radius: 10px;
+      padding: 12px 14px;
+      font-size: 0.9rem;
+      color: #333;
+      font-weight: 500;
+      display: none;
+      margin-bottom: 22px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .video-info.show { display: block; }
+
+    .type-group { display: flex; gap: 10px; }
+
+    .type-option {
+      flex: 1;
+      border: 1.5px solid #e0e0e0;
+      border-radius: 10px;
+      padding: 12px 16px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.9rem;
+      color: #555;
+      transition: all 0.15s;
+      user-select: none;
+    }
+
+    .type-option:hover { border-color: #ffaaaa; background: #fff8f8; }
+
+    .type-option.selected {
+      border-color: #ff0000;
+      background: #fff0f0;
+      color: #cc0000;
+      font-weight: 600;
+    }
+
+    .type-option input[type="radio"] { display: none; }
+
+    select {
+      width: 100%;
+      border: 1.5px solid #e0e0e0;
+      border-radius: 10px;
+      padding: 11px 14px;
+      font-size: 0.95rem;
+      background: #fafafa;
+      color: #1a1a1a;
+      outline: none;
+      cursor: pointer;
+      transition: border-color 0.15s;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23aaa' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 14px center;
+      padding-right: 36px;
+    }
+
+    select:focus { border-color: #ff0000; background-color: white; }
+
+    .download-btn-wrap { margin-top: 8px; }
+
+    .btn-download {
+      width: 100%;
+      padding: 14px;
+      font-size: 1rem;
+      border-radius: 12px;
+    }
+
+    .progress-section { margin-top: 20px; display: none; }
+    .progress-section.show { display: block; }
+
+    .progress-label {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.85rem;
+      color: #666;
+      margin-bottom: 8px;
+    }
+
+    .progress-pct { font-weight: 600; color: #ff0000; }
+
+    .progress-track {
+      background: #f0f0f0;
+      border-radius: 99px;
+      height: 8px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #ff4444, #ff0000);
+      border-radius: 99px;
+      width: 0%;
+      transition: width 0.4s ease;
+    }
+
+    .status-bar {
+      margin-top: 14px;
+      font-size: 0.875rem;
+      text-align: center;
+      min-height: 20px;
+    }
+
+    .status-bar.error { color: #d32f2f; }
+    .status-bar.success { color: #2e7d32; font-weight: 500; }
+    .status-bar.info { color: #555; }
+
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+<div class="card">
+  <div class="header">
+    <div class="yt-icon">
+      <svg viewBox="0 0 24 24" fill="white">
+        <path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 0 0 .5 6.2C0 8.1 0 12 0 12s0 3.9.5 5.8a3 3 0 0 0 2.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 0 0 2.1-2.1C24 15.9 24 12 24 12s0-3.9-.5-5.8zM9.75 15.5v-7l6.5 3.5-6.5 3.5z"/>
+      </svg>
+    </div>
+    <h1>YouTube 下載工具</h1>
+  </div>
+  <p class="subtitle">支援影片（最高 2K）與音訊（MP3）下載</p>
+
+  <!-- URL 輸入 -->
+  <div class="field">
+    <label class="field-label">YouTube 網址</label>
+    <div class="input-row">
+      <input type="text" id="urlInput" placeholder="https://www.youtube.com/watch?v=...">
+      <button class="btn btn-outline" id="loadBtn" onclick="loadInfo()">載入</button>
+    </div>
+  </div>
+
+  <!-- 影片標題 -->
+  <div class="video-info" id="videoInfo" title=""></div>
+
+  <!-- 下載類型 -->
+  <div class="field">
+    <label class="field-label">下載類型</label>
+    <div class="type-group">
+      <label class="type-option selected" id="optVideo">
+        <input type="radio" name="dlType" value="video" checked>
+        🎬 影片
+      </label>
+      <label class="type-option" id="optAudio">
+        <input type="radio" name="dlType" value="audio">
+        🎵 音訊（MP3）
+      </label>
+    </div>
+  </div>
+
+  <!-- 品質選擇 -->
+  <div class="field" id="qualityField">
+    <label class="field-label">影片品質</label>
+    <select id="qualitySelect">
+      <option disabled>— 請先載入影片 —</option>
+    </select>
+  </div>
+
+  <!-- 下載按鈕 -->
+  <div class="download-btn-wrap">
+    <button class="btn btn-primary btn-download" id="downloadBtn" onclick="startDownload()" disabled>
+      ⬇&nbsp; 下載
+    </button>
+  </div>
+
+  <!-- 進度條 -->
+  <div class="progress-section" id="progressSection">
+    <div class="progress-label">
+      <span id="progressText">準備中...</span>
+      <span class="progress-pct" id="progressPct">0%</span>
+    </div>
+    <div class="progress-track">
+      <div class="progress-fill" id="progressFill"></div>
+    </div>
+  </div>
+
+  <!-- 狀態訊息 -->
+  <div class="status-bar" id="statusBar"></div>
+</div>
+
+<script>
+  let videoLoaded = false;
+
+  // 下載類型切換
+  document.querySelectorAll('input[name="dlType"]').forEach(radio => {
+    radio.addEventListener('change', function () {
+      document.querySelectorAll('.type-option').forEach(el => el.classList.remove('selected'));
+      this.closest('.type-option').classList.add('selected');
+      document.getElementById('qualityField').style.display = this.value === 'video' ? '' : 'none';
+    });
+  });
+
+  // Enter 鍵觸發載入
+  document.getElementById('urlInput').addEventListener('keydown', e => {
+    if (e.key === 'Enter') loadInfo();
+  });
+
+  async function loadInfo() {
+    const url = document.getElementById('urlInput').value.trim();
+    if (!url) return;
+
+    const loadBtn = document.getElementById('loadBtn');
+    loadBtn.disabled = true;
+    loadBtn.textContent = '載入中...';
+    setStatus('', '');
+
+    try {
+      const res = await fetch('/api/info?url=' + encodeURIComponent(url));
+      const data = await res.json();
+      if (data.error) throw new Error(data.error);
+
+      const infoEl = document.getElementById('videoInfo');
+      infoEl.textContent = '📹 ' + data.title;
+      infoEl.title = data.title;
+      infoEl.classList.add('show');
+
+      const sel = document.getElementById('qualitySelect');
+      sel.innerHTML = data.qualities.map(q => `<option value="${q}">${q}</option>`).join('');
+
+      videoLoaded = true;
+      document.getElementById('downloadBtn').disabled = false;
+    } catch (e) {
+      setStatus('❌ ' + e.message, 'error');
+    } finally {
+      loadBtn.disabled = false;
+      loadBtn.textContent = '載入';
+    }
+  }
+
+  async function startDownload() {
+    const url = document.getElementById('urlInput').value.trim();
+    if (!url || !videoLoaded) return;
+
+    const type = document.querySelector('input[name="dlType"]:checked').value;
+    const resolution = document.getElementById('qualitySelect').value;
+
+    document.getElementById('downloadBtn').disabled = true;
+    showProgress(true);
+    setProgress(0, '準備中...');
+    setStatus('', '');
+
+    try {
+      const res = await fetch('/api/download', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url, type, resolution })
+      });
+      const { task_id, error } = await res.json();
+      if (error) throw new Error(error);
+
+      await trackProgress(task_id);
+
+      setStatus('✅ 下載完成，檔案儲存中...', 'success');
+      const a = document.createElement('a');
+      a.href = '/api/file/' + task_id;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+
+    } catch (e) {
+      setStatus('❌ ' + e.message, 'error');
+    } finally {
+      document.getElementById('downloadBtn').disabled = false;
+      setTimeout(() => showProgress(false), 4000);
+    }
+  }
+
+  function trackProgress(task_id) {
+    return new Promise((resolve, reject) => {
+      const es = new EventSource('/api/progress/' + task_id);
+      es.onmessage = e => {
+        const d = JSON.parse(e.data);
+        if (d.status === 'error') {
+          es.close();
+          reject(new Error(d.error || '下載失敗'));
+        } else if (d.status === 'done') {
+          setProgress(100, '完成！');
+          es.close();
+          resolve();
+        } else if (d.status === 'downloading') {
+          const pct = d.progress;
+          if (pct < 50) {
+            setProgress(pct, '下載影片中...');
+          } else if (pct < 100) {
+            setProgress(pct, pct === 50 ? '下載音訊中...' : '合併中...');
+          }
+        }
+      };
+      es.onerror = () => { es.close(); reject(new Error('進度連線中斷')); };
+    });
+  }
+
+  function setProgress(pct, text) {
+    document.getElementById('progressFill').style.width = pct + '%';
+    document.getElementById('progressText').textContent = text;
+    document.getElementById('progressPct').textContent = pct + '%';
+  }
+
+  function showProgress(show) {
+    document.getElementById('progressSection').classList.toggle('show', show);
+    if (!show) setProgress(0, '');
+  }
+
+  function setStatus(msg, type) {
+    const el = document.getElementById('statusBar');
+    el.textContent = msg;
+    el.className = 'status-bar' + (type ? ' ' + type : '');
+  }
+</script>
+</body>
+</html>

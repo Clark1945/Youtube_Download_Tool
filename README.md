@@ -1,65 +1,178 @@
-# YouTube 下載工具 / YouTube Downloader Tool
+<div align="center">
 
-這是一個使用 `Tkinter` 和 `pytubefix` 所開發的桌面應用程式，支援從 YouTube 下載影片或音訊檔案，並可選擇儲存路徑與影片品質。若影片品質為 720p 或以上，將自動使用 FFmpeg 合併影音檔案。
+<img src="youtube-downloader-preview.png" alt="YouTube Downloader Preview" width="700"/>
 
-This is a desktop GUI tool built with `Tkinter` and `pytubefix` for downloading videos or audio from YouTube. It supports saving to a specified path and selecting video quality. For videos in 720p or higher, FFmpeg is used to merge audio and video.
+# YouTube 下載工具 / YouTube Downloader / YouTube ダウンローダー
 
----
+**中文** | **English** | **日本語**
 
-## 📌 功能特色 / Features
+[![Python](https://img.shields.io/badge/Python-3.10+-3776AB?logo=python&logoColor=white)](https://www.python.org/)
+[![Flask](https://img.shields.io/badge/Flask-3.x-000000?logo=flask&logoColor=white)](https://flask.palletsprojects.com/)
+[![License](https://img.shields.io/badge/License-MIT-green)](LICENSE)
 
-- 🎬 支援下載影片（可選擇高品質）
-- 🎵 支援下載音訊（自動轉為 MP3）
-- 📁 可選擇儲存位置
-- 📶 顯示下載進度
-- ⚙ 自動使用 FFmpeg 合併高畫質影片與音訊（720p+）
+</div>
 
 ---
 
-## 🔧 安裝與使用 / Installation & Usage
+## 📖 簡介 / About / 概要
 
-### ✅ 系統需求 / Requirements
+**中文**
+> 基於 Flask 開發的 YouTube 影片下載 Web 應用程式，支援影片（最高 2K）與音訊（MP3）下載，具備登入驗證保護。
 
-- Python 3.10+
-- [FFmpeg](https://ffmpeg.org/download.html)（需加入環境變數或調整 `download()` 中的路徑）
-- 套件依賴：
-  - `pytubefix`
-  - `tkinter`（Python 內建）
-  
-### 📦 安裝套件 / Install dependencies
+**English**
+> A Flask-based YouTube downloader web app supporting video (up to 2K) and audio (MP3) downloads, with login authentication.
+
+**日本語**
+> Flask ベースの YouTube 動画ダウンロード Web アプリ。2K 動画・音声（MP3）のダウンロードに対応し、ログイン認証機能付き。
+
+---
+
+## ✨ 功能特色 / Features / 機能
+
+| 功能 | Feature | 機能 |
+|------|---------|------|
+| 🎬 影片下載，支援最高 2K 畫質 | Video download up to 2K | 最大 2K の動画ダウンロード |
+| 🎵 音訊下載，自動轉為 MP3 | Audio download, auto-convert to MP3 | 音声ダウンロード（MP3 自動変換） |
+| 📶 即時下載進度條 | Real-time progress bar | リアルタイム進捗バー |
+| 🔐 登入驗證保護 | Login authentication | ログイン認証 |
+| ⚙️ FFmpeg 自動合併高畫質影音 | Auto FFmpeg merge for 720p+ | FFmpeg による高画質合成 |
+| 🌐 瀏覽器直接下載檔案 | Direct browser file download | ブラウザ直接ダウンロード |
+
+---
+
+## 🛠️ 技術架構 / Tech Stack / 技術スタック
+
+```
+┌─────────────────────────────────────────────┐
+│                   Browser                    │
+│         HTML / CSS / Vanilla JS              │
+│         Server-Sent Events (SSE)             │
+└──────────────────┬──────────────────────────┘
+                   │ HTTP
+┌──────────────────▼──────────────────────────┐
+│              Flask (Python)                  │
+│                                              │
+│  /login          Session Auth                │
+│  /               Main Page                   │
+│  /api/info       Fetch Video Metadata        │
+│  /api/download   Start Download Task         │
+│  /api/progress   SSE Progress Stream         │
+│  /api/file       Serve Completed File        │
+└──────────┬───────────────────┬──────────────┘
+           │                   │
+┌──────────▼──────┐   ┌────────▼──────────────┐
+│   pytubefix     │   │       FFmpeg           │
+│ YouTube Stream  │   │  Merge Video + Audio   │
+│   Extraction    │   │  (720p and above)      │
+└─────────────────┘   └────────────────────────┘
+```
+
+| 層級 | 技術 | 說明 |
+|------|------|------|
+| 後端框架 | Flask 3.x | Web 伺服器與路由 |
+| YouTube 解析 | pytubefix | 串流抓取與下載 |
+| 影音合併 | FFmpeg | 合併 720p 以上的分離影音串流 |
+| 即時進度 | Server-Sent Events | 後端推送下載進度至前端 |
+| 身分驗證 | Flask Session | Cookie-based 登入狀態管理 |
+| 設定管理 | python-dotenv | 帳密存於 `.env`，不寫入程式碼 |
+| 前端 | HTML / CSS / JS | 無框架依賴，原生實作 |
+
+---
+
+## 📸 實際畫面 / Screenshots / スクリーンショット
+
+<div align="center">
+<img src="demo.png" alt="App Screenshot" width="650"/>
+</div>
+
+---
+
+## 🚀 安裝與執行 / Installation / インストール
+
+### 1. 環境需求 / Requirements / 必要環境
+
+- Python **3.10+**
+- `ffmpeg.exe`（已包含於專案根目錄 / Included in project root / プロジェクトルートに同梱）
+
+### 2. 安裝套件 / Install dependencies / 依存関係のインストール
 
 ```bash
-pip install pytubefix
+pip install -r requirements.txt
 ```
 
-### 🚀 執行程式 / Run the application
+`requirements.txt` 包含：
+
+```
+pytubefix
+flask
+python-dotenv
+```
+
+### 3. 設定帳號密碼 / Configure credentials / 認証情報の設定
+
+在專案根目錄建立 `.env` 檔案 / Create `.env` in project root / プロジェクトルートに `.env` を作成：
+
+```env
+LOGIN_USERNAME=your_username
+LOGIN_PASSWORD=your_password
+SECRET_KEY=your-random-secret-key
+```
+
+### 4. 啟動伺服器 / Start server / サーバー起動
 
 ```bash
-python your_script_name.py
+python app.py
 ```
 
-### 🛠 FFmpeg 設定 / FFmpeg Configuration
+開啟瀏覽器訪問 / Open browser at / ブラウザで開く：
 
-請確認 ffmpeg 可執行檔已安裝，並修改以下程式碼中 ffmpeg 路徑：
-
-```python
-cmd = [
-    ".\\ffmpeg",  # 或完整路徑，例如：C:\\ffmpeg\\bin\\ffmpeg.exe
-    ...
-]
+```
+http://localhost:5000
 ```
 
-### 📸 使用畫面 / Screenshots
+---
 
-![Download from Youtube](demo.png)
+## 📁 專案結構 / Project Structure / プロジェクト構成
 
-### ❗ 注意事項 / Notes
-- 音訊下載會自動轉為 .mp3 格式。
-- 若影片高於 720p，會下載影片與音訊後合併，需使用 FFmpeg。
-- 若遇錯誤，請確認 YouTube 網址正確並可連線。
+```
+youtube_download_tool/
+├── app.py                   # Flask 主程式 / Main app / メインアプリ
+├── .env                     # 帳密設定（不可提交 git）/ Credentials (not in git)
+├── requirements.txt         # 套件依賴 / Dependencies
+├── ffmpeg.exe               # FFmpeg 執行檔 / FFmpeg binary
+├── templates/
+│   ├── login.html           # 登入頁面 / Login page / ログインページ
+│   └── index.html           # 下載主頁 / Main page / メインページ
+└── downloads/               # 暫存下載檔案 / Temporary files
+```
 
-### 📝 授權 / License
-MIT License - Feel free to use, modify and share.
+---
 
-### 🙌 作者 / Author
-Developed by Clark1945
+## ⚠️ 注意事項 / Notes / 注意事項
+
+**中文**
+- `.env` 請加入 `.gitignore`，避免帳密外洩
+- 720p 以上影片需透過 FFmpeg 合併影音，請確認 `ffmpeg.exe` 存在於根目錄
+- 本工具僅供個人合法使用
+
+**English**
+- Add `.env` to `.gitignore` to prevent credential leaks
+- Videos at 720p or above require FFmpeg for audio/video merging
+- For personal and lawful use only
+
+**日本語**
+- `.env` を `.gitignore` に追加して認証情報の漏洩を防いでください
+- 720p 以上の動画は FFmpeg による合成が必要です
+- 個人的・合法的な用途のみにご使用ください
+
+---
+
+## 📝 授權 / License / ライセンス
+
+MIT License — Free to use, modify and share.
+
+---
+
+<div align="center">
+  Developed by <strong>Clark1945</strong>
+</div>

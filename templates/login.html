@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>登入 — YouTube 下載工具</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f0f2f5;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 24px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+      padding: 44px 40px;
+      width: 100%;
+      max-width: 400px;
+    }
+
+    .header {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 36px;
+    }
+
+    .yt-icon {
+      background: #ff0000;
+      border-radius: 16px;
+      width: 56px;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 16px;
+    }
+
+    .yt-icon svg { width: 30px; height: 30px; }
+
+    h1 {
+      font-size: 1.4rem;
+      color: #1a1a1a;
+      margin-bottom: 4px;
+    }
+
+    .subtitle {
+      color: #999;
+      font-size: 0.875rem;
+    }
+
+    .field {
+      margin-bottom: 18px;
+    }
+
+    label {
+      display: block;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: #444;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 7px;
+    }
+
+    input[type="text"],
+    input[type="password"] {
+      width: 100%;
+      border: 1.5px solid #e0e0e0;
+      border-radius: 10px;
+      padding: 12px 14px;
+      font-size: 0.95rem;
+      color: #1a1a1a;
+      background: #fafafa;
+      outline: none;
+      transition: border-color 0.15s, background 0.15s;
+    }
+
+    input[type="text"]:focus,
+    input[type="password"]:focus {
+      border-color: #ff0000;
+      background: white;
+    }
+
+    .error-msg {
+      background: #fff5f5;
+      border: 1.5px solid #ffcccc;
+      border-radius: 10px;
+      color: #d32f2f;
+      font-size: 0.875rem;
+      padding: 10px 14px;
+      margin-bottom: 18px;
+      text-align: center;
+    }
+
+    button[type="submit"] {
+      width: 100%;
+      background: #ff0000;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      padding: 13px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s, transform 0.1s;
+      margin-top: 6px;
+    }
+
+    button[type="submit"]:hover { background: #d40000; transform: translateY(-1px); }
+    button[type="submit"]:active { transform: translateY(0); }
+  </style>
+</head>
+<body>
+<div class="card">
+  <div class="header">
+    <div class="yt-icon">
+      <svg viewBox="0 0 24 24" fill="white">
+        <path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 0 0 .5 6.2C0 8.1 0 12 0 12s0 3.9.5 5.8a3 3 0 0 0 2.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 0 0 2.1-2.1C24 15.9 24 12 24 12s0-3.9-.5-5.8zM9.75 15.5v-7l6.5 3.5-6.5 3.5z"/>
+      </svg>
+    </div>
+    <h1>YouTube 下載工具</h1>
+    <p class="subtitle">請登入後使用</p>
+  </div>
+
+  {% if error %}
+  <div class="error-msg">{{ error }}</div>
+  {% endif %}
+
+  <form method="POST" action="/login">
+    <div class="field">
+      <label for="username">帳號</label>
+      <input type="text" id="username" name="username" autocomplete="username"
+             placeholder="輸入帳號" autofocus>
+    </div>
+    <div class="field">
+      <label for="password">密碼</label>
+      <input type="password" id="password" name="password" autocomplete="current-password"
+             placeholder="輸入密碼">
+    </div>
+    <button type="submit">登入</button>
+  </form>
+</div>
+</body>
+</html>
