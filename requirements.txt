@@ -1,3 +1,4 @@
 pytubefix
 flask
 python-dotenv
+gunicorn

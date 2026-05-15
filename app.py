@@ -3,6 +3,7 @@ import re
 import time
 import json
 import uuid
+import shutil
 import threading
 import subprocess
 from functools import wraps
@@ -22,7 +23,7 @@ LOGIN_PASSWORD = os.environ['LOGIN_PASSWORD']
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DOWNLOADS_DIR = os.path.join(BASE_DIR, 'downloads')
-FFMPEG_PATH = os.path.join(BASE_DIR, 'ffmpeg.exe')
+FFMPEG_PATH = shutil.which('ffmpeg') or os.path.join(BASE_DIR, 'ffmpeg.exe')
 os.makedirs(DOWNLOADS_DIR, exist_ok=True)
 
 tasks = {}
