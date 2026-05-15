@@ -2,7 +2,7 @@ services:
   - type: web
     name: youtube-downloader
     env: python
-    buildCommand: apt-get install -y ffmpeg && pip install -r requirements.txt
+    buildCommand: pip install -r requirements.txt
     startCommand: gunicorn app:app --workers 2 --timeout 120
     envVars:
       - key: SECRET_KEY

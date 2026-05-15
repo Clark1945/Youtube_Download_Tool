@@ -23,7 +23,11 @@ LOGIN_PASSWORD = os.environ['LOGIN_PASSWORD']
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DOWNLOADS_DIR = os.path.join(BASE_DIR, 'downloads')
-FFMPEG_PATH = shutil.which('ffmpeg') or os.path.join(BASE_DIR, 'ffmpeg.exe')
+try:
+    import imageio_ffmpeg
+    FFMPEG_PATH = imageio_ffmpeg.get_ffmpeg_exe()
+except Exception:
+    FFMPEG_PATH = shutil.which('ffmpeg') or os.path.join(BASE_DIR, 'ffmpeg.exe')
 os.makedirs(DOWNLOADS_DIR, exist_ok=True)
 
 tasks = {}
